@@ -5,7 +5,7 @@ import { validationExpressResult } from "../middlewares/validationExpressResult.
 
 const authRoutes = express.Router()
 
-authRoutes.post('/Login',
+authRoutes.get('/Login',
   [
     body('email', "incorrect email format")
       .trim()
