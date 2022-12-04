@@ -1,6 +1,7 @@
 import express  from "express";
 import { body} from 'express-validator';
-import { login, register } from "../controllers/auth.controllers.js";
+import { infoUser, login, register } from "../controllers/auth.controllers.js";
+import { authToken } from "../middlewares/authToken.js";
 import { validationExpressResult } from "../middlewares/validationExpressResult.js";
 
 const authRoutes = express.Router()
@@ -39,5 +40,5 @@ authRoutes.post(
   ],
   register
 )
-
+authRoutes.get('/protected', authToken, infoUser)
 export default authRoutes

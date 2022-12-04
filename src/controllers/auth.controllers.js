@@ -1,10 +1,8 @@
 import {User} from '../models/user.model.js'
-import 'dotenv/config' 
-import jwt from 'jsonwebtoken'
+import { generateToken } from '../utils/tokenAdmin.js';
 
 export const login = async (req, res)=>{
   const { email, password } = req.body
-  console.log(email, password);
   try {
     const checkUser =  await User.findOne({email})
     if (!checkUser)  return res.status(403).json({error : "the user does not exist"} )
@@ -14,9 +12,8 @@ export const login = async (req, res)=>{
     if (!checkPassword)  return res.status(403).json({error : "incorrect credentials"} )
 
     // Create jwt
-    const token = jwt.sign({ uid: checkUser.id }, process.env.JWT_SECRET);
-
-    return res.json({token})
+    const {token, expiresIn} = generateToken(checkUser.id)
+    return res.json({ token, expiresIn })
 
   } catch (error) {
     console.log(error);
@@ -26,7 +23,6 @@ export const login = async (req, res)=>{
 
 export const register = async (req, res)=>{
   const {userName, email, password, rol } = req.body
-  console.log(email, password);
   try {
     // esta comprobacion es repetitiva ya que cacheo el error 11000 que manda moongose en el catch
     const checkUser =  await User.findOne({email})
@@ -44,5 +40,19 @@ export const register = async (req, res)=>{
       return res.status(400).json({ error: "the user exist" })
     }
     res.status(500).json({ error: "server error" })
+  }
+}
+
+export const infoUser = async (req, res)=>{
+  const {uid } = req
+  console.log(uid);
+  try {
+    // esta comprobacion es repetitiva ya que cacheo el error 11000 que manda moongose en el catch
+    const user = await User.findById(uid).lean()
+    return res.status(200).json({ email: user.email, uid: user._id})
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({error:"server error"})
   }
 }
