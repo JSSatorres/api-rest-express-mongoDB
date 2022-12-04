@@ -1,5 +1,7 @@
+import 'dotenv/config' 
+import jwt from 'jsonwebtoken'
 import {User} from '../models/user.model.js'
-import { generateToken } from '../utils/tokenAdmin.js';
+import { generateRefreshToken, generateToken } from '../utils/tokenAdmin.js';
 
 export const login = async (req, res)=>{
   const { email, password } = req.body
@@ -13,6 +15,7 @@ export const login = async (req, res)=>{
 
     // Create jwt
     const {token, expiresIn} = generateToken(checkUser.id)
+    generateRefreshToken(checkUser.id, res)
     return res.json({ token, expiresIn })
 
   } catch (error) {
@@ -50,9 +53,34 @@ export const infoUser = async (req, res)=>{
     // esta comprobacion es repetitiva ya que cacheo el error 11000 que manda moongose en el catch
     const user = await User.findById(uid).lean()
     return res.status(200).json({ email: user.email, uid: user._id})
+    
 
   } catch (error) {
     console.log(error);
     return res.status(500).json({error:"server error"})
+  }
+}
+
+export const refreshToken = (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken
+    if (!refreshToken) throw new Error ("does not exist Baerer refreshToken") 
+    // refreshToken = refreshToken.split(" ")[1]
+    const {uid} = jwt.verify(refreshToken, process.env.JWT_REFRESH)  
+    const {token, expiresIn} = generateToken(uid)
+
+    return res.json({ token, expiresIn })
+
+  } catch (error) {
+    console.log(error);
+
+    const tokenVerificationError = {
+      "jwt malformed":"Formato no válido",
+      "invalid token":"token no valido",
+      "jwt expired":"tiempo expirado",
+      "invalid signature":" la firma no es valida",          
+    }
+
+    return res.status(401).send({error: tokenVerificationError[error.message]})
   }
 }

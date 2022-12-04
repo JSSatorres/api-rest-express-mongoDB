@@ -1,6 +1,6 @@
 import express  from "express";
 import { body} from 'express-validator';
-import { infoUser, login, register } from "../controllers/auth.controllers.js";
+import { infoUser, login, register, refreshToken } from "../controllers/auth.controllers.js";
 import { authToken } from "../middlewares/authToken.js";
 import { validationExpressResult } from "../middlewares/validationExpressResult.js";
 
@@ -41,4 +41,6 @@ authRoutes.post(
   register
 )
 authRoutes.get('/protected', authToken, infoUser)
+authRoutes.get('/refresh', refreshToken)
+
 export default authRoutes

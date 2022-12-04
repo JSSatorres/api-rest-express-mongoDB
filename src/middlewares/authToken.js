@@ -22,6 +22,6 @@ export const authToken = (req, res, next) => {
       "invalid signature":" la firma no es valida",          
     }
 
-    res.status(401).send({error: tokenVerificationError[error.message]})
+    return res.status(401).send({error: tokenVerificationError[error.message]})
   }
 }
