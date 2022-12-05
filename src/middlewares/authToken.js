@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import 'dotenv/config' 
+import { tokenVerificationErrors } from '../utils/tokenAdmin.js'
 
 export const authToken = (req, res, next) => {
   try {
@@ -15,13 +16,6 @@ export const authToken = (req, res, next) => {
   } catch (error) {
     console.log(error);
 
-    const tokenVerificationError = {
-      "jwt malformed":"Formato no válido",
-      "invalid token":"token no valido",
-      "jwt expired":"tiempo expirado",
-      "invalid signature":" la firma no es valida",          
-    }
-
-    return res.status(401).send({error: tokenVerificationError[error.message]})
+    return res.status(401).send({error: tokenVerificationErrors[error.message]})
   }
 }
