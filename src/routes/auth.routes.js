@@ -1,46 +1,16 @@
 import express  from "express";
-import { body} from 'express-validator';
-import { infoUser, login, register, refreshToken } from "../controllers/auth.controllers.js";
+
+import { infoUser, login, register, refreshToken, logout } from "../controllers/auth.controllers.js";
 import { authToken } from "../middlewares/authToken.js";
-import { validationExpressResult } from "../middlewares/validationExpressResult.js";
+import { requireRefreshToken } from "../middlewares/requireRefreshToken.js";
+import { bodyLoginValidator, bodyRegisterValidator } from "../middlewares/validatorManager.js";
 
 const authRoutes = express.Router()
 
-authRoutes.get('/Login',
-  [
-    body('email', "incorrect email format")
-      .trim()
-      .isEmail()
-      .normalizeEmail(),
-    body("password", "at least 6 characters")
-      .trim()
-      .isLength({min:6}),
-    validationExpressResult,
-  ],
-  login
-)
-
-authRoutes.post(
-  '/register',
-  [
-    body('email', "incorrect email format")
-      .trim()
-      .isEmail()
-      .normalizeEmail(),
-    body("password", "at least 6 characters")
-      .trim()
-      .isLength({min:6})
-      .custom((value, {req})=>{
-        if ( value !== req.body.repassword) {
-          throw new Error("the pasword are not the same")
-        }
-        return true
-      }),
-    validationExpressResult,
-  ],
-  register
-)
+authRoutes.get('/Login',bodyLoginValidator, login)
+authRoutes.post('/register',bodyRegisterValidator, register)
 authRoutes.get('/protected', authToken, infoUser)
-authRoutes.get('/refresh', refreshToken)
+authRoutes.get('/refresh',requireRefreshToken, refreshToken)
+authRoutes.get('/logout', logout)
 
 export default authRoutes

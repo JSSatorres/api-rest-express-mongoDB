@@ -4,8 +4,8 @@ import {User} from '../models/user.model.js'
 import { generateRefreshToken, generateToken } from '../utils/tokenAdmin.js';
 
 export const login = async (req, res)=>{
-  const { email, password } = req.body
   try {
+    const { email, password } = req.body
     const checkUser =  await User.findOne({email})
     if (!checkUser)  return res.status(403).json({error : "the user does not exist"} )
 
@@ -34,7 +34,11 @@ export const register = async (req, res)=>{
     const user = new User({ userName, email, password, rol })  
     await user.save()
 
-    return res.status(201).json({ ok: "register" })
+    //Generate JWT
+    const { token, expiresIn } = generateToken(user.id);
+    generateRefreshToken(user.id, res);
+
+    return res.status(201).json({ token, expiresIn });
 
   } catch (error) {
     console.log(error);
@@ -48,12 +52,9 @@ export const register = async (req, res)=>{
 
 export const infoUser = async (req, res)=>{
   const {uid } = req
-  console.log(uid);
   try {
-    // esta comprobacion es repetitiva ya que cacheo el error 11000 que manda moongose en el catch
     const user = await User.findById(uid).lean()
-    return res.status(200).json({ email: user.email, uid: user._id})
-    
+    return res.status(200).json({ email: user.email, uid: user._id})    
 
   } catch (error) {
     console.log(error);
@@ -63,24 +64,16 @@ export const infoUser = async (req, res)=>{
 
 export const refreshToken = (req, res) => {
   try {
-    const refreshToken = req.cookies.refreshToken
-    if (!refreshToken) throw new Error ("does not exist Baerer refreshToken") 
-    // refreshToken = refreshToken.split(" ")[1]
-    const {uid} = jwt.verify(refreshToken, process.env.JWT_REFRESH)  
     const {token, expiresIn} = generateToken(uid)
-
     return res.json({ token, expiresIn })
 
   } catch (error) {
     console.log(error);
-
-    const tokenVerificationError = {
-      "jwt malformed":"Formato no válido",
-      "invalid token":"token no valido",
-      "jwt expired":"tiempo expirado",
-      "invalid signature":" la firma no es valida",          
-    }
-
     return res.status(401).send({error: tokenVerificationError[error.message]})
   }
+}
+
+export const logout = () => {
+  res.clearCookie('refreshToken')
+  res.json({ok: true})
 }
