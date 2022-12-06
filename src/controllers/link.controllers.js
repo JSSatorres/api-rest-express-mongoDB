@@ -17,9 +17,11 @@ export const getOneLink = async ( req,res) => {
   try {
     const {id} = req.params
     const oneLink = await Link.findById(id) 
-    console.log("oneLink-----------",oneLink);
+
     if (!oneLink) return res.status(400).josn({error:"does not exits link"})
+
     if (oneLink.uid.equals(req.uid)) return res.status(401).json({error:"you are not allow to see the link"})
+
     return res.status(200).json({ oneLink })
   } catch (error) {
     console.log(error);
@@ -33,8 +35,36 @@ export const renoveOneLink = async ( req,res) => {
     const oneLink = await Link.findById(id) 
 
     if (!oneLink) return res.status(400).josn({error:"does not exits link"})
+
     if (oneLink.uid.equals(req.uid)) return res.status(401).json({error:"you are not allow to see the link"})
+
     oneLink.remove()
+
+    return res.status(200).json({ oneLink })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({error: "sever error one link"})
+  }
+}
+
+export const updateOneLink = async ( req,res) => {
+
+  try {
+    const {id} = req.params
+    const {longLink } = req.body
+
+    if (!longLink.startsWith('http://')) {
+      longLink = `http://${longLink}`
+    }
+    const oneLink = await Link.findById(id) 
+
+    if (!oneLink) return res.status(400).josn({error:"does not exits link"})
+
+    if (oneLink.uid.equals(req.uid)) return res.status(401).json({error:"you are not allow to see the link"})
+
+    oneLink.longLink = longLink;
+    await oneLink.save();
+
     return res.status(200).json({ oneLink })
   } catch (error) {
     console.log(error);
