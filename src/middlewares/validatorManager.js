@@ -47,3 +47,11 @@ export const bodyRegisterValidator =   [
     }),
   validationExpressResult,
 ]
+
+export const paramLinkValidator = [
+  param("id", "Formato no válido (expressValidator)")
+      .trim()
+      .notEmpty()
+      .escape(),
+  validationResultExpress,
+];

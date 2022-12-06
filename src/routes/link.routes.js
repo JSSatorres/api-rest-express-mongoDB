@@ -1,16 +1,22 @@
 import { Router } from "express";
-import { createLinks, getLinks } from "../controllers/link.controllers.js";
 import { authToken } from "../middlewares/authToken.js";
-import { bodyLinkValidator } from "../middlewares/validatorManager.js";
+import { bodyLinkValidator, paramLinkValidator } from "../middlewares/validatorManager.js";
+import { 
+  createLinks,
+  getLinks,
+  getOneLink,
+  renoveOneLink
+} from "../controllers/link.controllers.js";
 
 
 const linkRoutes = Router()
 
 
 linkRoutes.get("/", authToken, getLinks)
+linkRoutes.get("/:id", authToken,paramLinkValidator, getOneLink)
 linkRoutes.post("/", authToken, bodyLinkValidator, createLinks)
-linkRoutes.get("/", authToken, getLinks)
-linkRoutes.get("/", authToken, getLinks)
+linkRoutes.delete("/:id", authToken,paramLinkValidator, renoveOneLink)
+
 
 
 
