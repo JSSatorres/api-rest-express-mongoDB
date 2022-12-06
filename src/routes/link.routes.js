@@ -1,11 +1,15 @@
 import { Router } from "express";
-import { getLinks } from "../controllers/link.controllers.js";
+import { createLinks, getLinks } from "../controllers/link.controllers.js";
 import { authToken } from "../middlewares/authToken.js";
+import { bodyLinkValidator } from "../middlewares/validatorManager.js";
 
 
 const linkRoutes = Router()
 
 
+linkRoutes.get("/", authToken, getLinks)
+linkRoutes.post("/", authToken, bodyLinkValidator, createLinks)
+linkRoutes.get("/", authToken, getLinks)
 linkRoutes.get("/", authToken, getLinks)
 
 
