@@ -1,4 +1,4 @@
-import { body} from 'express-validator';
+import { body, param} from 'express-validator';
 import { validationExpressResult } from "../middlewares/validationExpressResult.js";
 import axios from 'axios'
 
@@ -49,9 +49,9 @@ export const bodyRegisterValidator =   [
 ]
 
 export const paramLinkValidator = [
-  param("id", "Formato no válido (expressValidator)")
-      .trim()
-      .notEmpty()
-      .escape(),
-  validationResultExpress,
+    param("id", "Formato no válido (expressValidator)")
+        .trim()
+        .notEmpty()
+        .escape(),
+        validationExpressResult,
 ];

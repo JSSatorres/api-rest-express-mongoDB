@@ -12,6 +12,22 @@ export const getLinks = async ( req,res) => {
   }
 }
 
+export const getLinkCRUD = async ( req,res) => {
+
+  try {
+    const {nanoLink} = req.params
+    const oneLink = await Link.findOne({nanoLink}) 
+
+    if (!oneLink) return res.status(400).josn({error:"does not exits link"})
+ 
+    return res.status(200).json({longLink:oneLink.longLink })    
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({error: "sever error one link"})
+  }
+}
+
+// traditional CRUD in this project i will not use
 export const getOneLink = async ( req,res) => {
 
   try {
