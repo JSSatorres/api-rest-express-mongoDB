@@ -7,7 +7,7 @@ import { bodyLoginValidator, bodyRegisterValidator } from "../middlewares/valida
 
 const authRoutes = express.Router()
 
-authRoutes.get('/Login',bodyLoginValidator, login)
+authRoutes.post('/Login',bodyLoginValidator, login)
 authRoutes.post('/register',bodyRegisterValidator, register)
 authRoutes.get('/protected', authToken, infoUser)
 authRoutes.get('/refresh',requireRefreshToken, refreshToken)
