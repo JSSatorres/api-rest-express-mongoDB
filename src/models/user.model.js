@@ -20,8 +20,9 @@ const userSchema = new mongoose.Schema ({
   },
   rol:{
     type:String,
-    require:true,
-    emun:["ADMIN_ROLE","USER_ROLE"]
+    require:false,
+    emun:["ADMIN_ROLE","USER_ROLE"],
+    default:"USER_ROLE"
   },
   state:{
     type:Boolean,
